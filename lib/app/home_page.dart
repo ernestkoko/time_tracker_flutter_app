@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({@required this.auth, @required this.onSignOut});
+  HomePage({@required this.auth});
 
-  final VoidCallback onSignOut;
+  //final VoidCallback onSignOut;
   final AuthBase auth;
 
   // async call
@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
     try {
       print('SignIn clicked');
       await auth.signOut();
-      onSignOut();
+     // onSignOut();
     } catch (err) {
       print(err);
     }
