@@ -6,14 +6,12 @@ import 'package:time_tracker_flutter/app/sign_in/validators.dart';
 import 'package:time_tracker_flutter/common_widgets/form_submit_button.dart';
 import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
+import 'package:time_tracker_flutter/services/auth_provider.dart';
 
 //enum class to check the state of the user
 enum EmailSignInFormType { signIn, register }
 
 class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
-  EmailSignInForm({@required this.auth});
-
-  final AuthBase auth;
 
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
@@ -34,7 +32,8 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   //default value
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
 
-  void _submit() async {
+  void _submit(BuildContext context) async {
+    final auth = AuthProvider.of(context);
     setState(() {
       _submitted = true;
       _isLoading = true;
@@ -46,10 +45,10 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       if (_formType == EmailSignInFormType.signIn) {
         //if the button is showing sign in, sign in the user with email and
         // password when the button is clicked
-        await widget.auth.signInWithEmailAndPassword(_email, _password);
+        await auth.signInWithEmailAndPassword(_email, _password);
       } else {
         //else create new user
-        await widget.auth.createUserWithEmailAndPassword(_email, _password);
+        await auth.createUserWithEmailAndPassword(_email, _password);
       }
       //close the page if it succeeds
       Navigator.of(context).pop();
@@ -115,7 +114,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       ),
       FormSubmitButton(
         text: primaryText,
-        onPressed: submitEnabled ? _submit : null,
+        onPressed: submitEnabled ? () =>_submit(context) : null,
       ),
       SizedBox(
         height: 8.0,
@@ -139,7 +138,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
           errorText: showErrorText ? widget.invalidPasswordErrorText : null),
       obscureText: true,
       enabled: _isLoading == false,
-      onEditingComplete: _submit,
+      onEditingComplete:() => _submit(context),
       onChanged: (password) => _updateState(),
     );
   }

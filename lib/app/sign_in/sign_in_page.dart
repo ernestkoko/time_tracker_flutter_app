@@ -2,26 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:time_tracker_flutter/app/sign_in/email_sign_in_page.dart';
 import 'package:time_tracker_flutter/app/sign_in/sign_in_button.dart';
 import 'package:time_tracker_flutter/app/sign_in/social_sign_in_button.dart';
-import 'package:time_tracker_flutter/services/auth.dart';
+import 'package:time_tracker_flutter/services/auth_provider.dart';
 
 class SignInPage extends StatelessWidget {
-  SignInPage({@required this.auth});
-
-  //call back function
-
-  final AuthBase auth;
-
   // async call
-  Future<void> _signInAnonymously() async {
+  Future<void> _signInAnonymously(BuildContext context) async {
     try {
+      final auth = AuthProvider.of(context);
       await auth.signInAnonymously();
     } on Exception catch (err) {
       print(err);
     }
   }
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _signInWithGoogle(BuildContext context) async {
     try {
+      final auth = AuthProvider.of(context);
       await auth.signInWithGoogle();
     } on Exception catch (err) {
       print(err);
@@ -29,14 +25,13 @@ class SignInPage extends StatelessWidget {
   }
 
   void _signInWithEmail(BuildContext context) {
+    final auth = AuthProvider.of(context);
     //navigate to the email sign in page
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-       // fullscreenDialog: true,
+        // fullscreenDialog: true,
         //render the EmailSignInPage screen
-        builder: (context) => EmailSignInPage(
-          auth: auth,
-        ),
+        builder: (context) => EmailSignInPage(),
       ),
     );
   }
@@ -77,7 +72,7 @@ class SignInPage extends StatelessWidget {
               text: "Sign in with Google",
               color: Colors.white,
               textColor: Colors.black87,
-              onPressed: _signInWithGoogle,
+              onPressed: () => _signInWithGoogle(context),
             ),
             SizedBox(
               height: 8.0,
@@ -116,7 +111,7 @@ class SignInPage extends StatelessWidget {
               text: "Go anonymous",
               color: Colors.lime[300],
               textColor: Colors.black87,
-              onPressed: _signInAnonymously,
+              onPressed: () => _signInAnonymously(context),
             ),
           ],
         ),
