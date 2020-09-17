@@ -13,10 +13,12 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FbUser>(
+      //if auth state changes, this widget will rebuild
       stream: auth.onAuthStateChanged,
       //builder is called anytime the stream changes
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
+          //get the user
           FbUser user = snapshot.data;
           if (user == null) {
             return SignInPage(

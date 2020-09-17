@@ -67,13 +67,16 @@ class Auth implements AuthBase {
     if (googleSignInAccount != null) {
       //
       final googleSignInAuth = await googleSignInAccount.authentication;
+      //check if the token and the access tokens are null
       if (googleSignInAuth.idToken != null &&
           googleSignInAuth.accessToken != null) {
+        //if not null sign in the user
         final authResult = await _firebaseAuth.signInWithCredential(
           GoogleAuthProvider.credential(
               idToken: googleSignInAuth.idToken,
               accessToken: googleSignInAuth.accessToken),
         );
+        //return the user
         return _userFromFirebase(authResult.user);
       } else {
         throw PlatformException(
