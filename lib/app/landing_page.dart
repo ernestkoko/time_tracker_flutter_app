@@ -21,7 +21,7 @@ class LandingPage extends StatelessWidget {
           //get the user
           FbUser user = snapshot.data;
           if (user == null) {
-            return SignInPage();
+            return SignInPage.create(context);
           }
           //returns this if there is user
           return HomePage();
