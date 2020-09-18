@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
 
     try {
       print('SignIn clicked');
-      final auth = Provider.of<AuthBase>(context);
+      final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
       // onSignOut();
     } catch (err) {

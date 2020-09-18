@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -31,14 +29,27 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   //default value
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
 
-  void _submit(BuildContext context) async {
-    final auth = Provider.of<AuthBase>(context);
+  //called when a stateful widget is removed from the widget tree
+  @override
+  void dispose(){
+    //dispose the text controllers
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+  void _submit() async {
+    print("Submit: called");
+
     setState(() {
       _submitted = true;
       _isLoading = true;
     });
 
     try {
+      print("Try: called");
+      final auth = Provider.of<AuthBase>(context, listen: false);
       //delay for three seconds
       // Future.delayed(Duration(seconds: 3));
       if (_formType == EmailSignInFormType.signIn) {
@@ -51,20 +62,18 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       }
       //close the page if it succeeds
       Navigator.of(context).pop();
-    } catch (e) {
+    }  catch (e) {
+      print("Error: occurred");
       //if submit fails
       //display a dialog
-      //check if it is IOS platform
-      if (Platform.isIOS) {
-        //show Cupertino alert dialog
-      } else {
-        PlatformAlertDialog(
-          title: "Sign in failed",
-          content: e.toString(),
-          defaultActionText: "Ok",
-        ).show(context);
-      }
+      PlatformAlertDialog(
+        title: "Sign in failed",
+        content: e.message,
+        defaultActionText: "Ok",
+      ).show(context);
+
     } finally {
+      print("Finally: called");
       setState(() {
         _isLoading = false;
       });
@@ -113,7 +122,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       ),
       FormSubmitButton(
         text: primaryText,
-        onPressed: submitEnabled ? () => _submit(context) : null,
+        onPressed: submitEnabled ? () => _submit() : null,
       ),
       SizedBox(
         height: 8.0,
@@ -137,7 +146,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
           errorText: showErrorText ? widget.invalidPasswordErrorText : null),
       obscureText: true,
       enabled: _isLoading == false,
-      onEditingComplete: () => _submit(context),
+      onEditingComplete: () => _submit(),
       onChanged: (password) => _updateState(),
     );
   }

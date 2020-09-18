@@ -3,31 +3,54 @@ import 'package:provider/provider.dart';
 import 'package:time_tracker_flutter/app/sign_in/email_sign_in_page.dart';
 import 'package:time_tracker_flutter/app/sign_in/sign_in_button.dart';
 import 'package:time_tracker_flutter/app/sign_in/social_sign_in_button.dart';
+import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 
-
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
   // async call
+  @override
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  bool _isLoading = false;
+
   Future<void> _signInAnonymously(BuildContext context) async {
+    setState(() => _isLoading = true);
     try {
-      final auth = Provider.of<AuthBase>(context);
+      final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signInAnonymously();
-    } on Exception catch (err) {
+    } catch (err) {
       print(err);
+      PlatformAlertDialog(
+        title: "Sign in failed",
+        content: err.message,
+        defaultActionText: "Ok",
+      ).show(context);
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
   Future<void> _signInWithGoogle(BuildContext context) async {
+    setState(() => _isLoading = true);
     try {
-      final auth = Provider.of<AuthBase>(context);
+      final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signInWithGoogle();
-    } on Exception catch (err) {
-      print(err);
+    } catch (e) {
+      PlatformAlertDialog(
+        title: "Sign in failed",
+        content: e.message,
+        defaultActionText: "Ok",
+      ).show(context);
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
   void _signInWithEmail(BuildContext context) {
-    final auth = Provider.of<AuthBase>(context);
+    // setState(() => _isLoading = true);
+    final auth = Provider.of<AuthBase>(context, listen: false);
     //navigate to the email sign in page
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -58,14 +81,7 @@ class SignInPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(
-              "Sign in",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            SizedBox(height: 50.0, child: _buildHeader()),
             SizedBox(
               height: 48.0,
             ),
@@ -74,7 +90,7 @@ class SignInPage extends StatelessWidget {
               text: "Sign in with Google",
               color: Colors.white,
               textColor: Colors.black87,
-              onPressed: () => _signInWithGoogle(context),
+              onPressed:_isLoading ? null:  () => _signInWithGoogle(context),
             ),
             SizedBox(
               height: 8.0,
@@ -84,7 +100,7 @@ class SignInPage extends StatelessWidget {
               text: "Sign in with Facebook",
               color: Color(0XFF334D92),
               textColor: Colors.white,
-              onPressed: () {},
+              onPressed:_isLoading ? null:  () {},
             ),
             SizedBox(
               height: 8.0,
@@ -93,7 +109,7 @@ class SignInPage extends StatelessWidget {
               text: "Sign in with email",
               color: Colors.teal[700],
               textColor: Colors.white,
-              onPressed: () => _signInWithEmail(context),
+              onPressed:  _isLoading ? null : () => _signInWithEmail(context),
             ),
             SizedBox(
               height: 8.0,
@@ -113,10 +129,26 @@ class SignInPage extends StatelessWidget {
               text: "Go anonymous",
               color: Colors.lime[300],
               textColor: Colors.black87,
-              onPressed: () => _signInAnonymously(context),
+              onPressed: _isLoading ? null : () => _signInAnonymously(context),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return Text(
+      "Sign in",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 32.0,
+        fontWeight: FontWeight.w600,
       ),
     );
   }

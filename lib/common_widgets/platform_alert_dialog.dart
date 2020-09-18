@@ -26,6 +26,7 @@ class PlatformAlertDialog extends PlatformWidget {
             context: context, builder: (context) => this)
         : await showDialog<bool>(
             context: context,
+            //this makes tapping on the body of the phone not dismiss the dialog
             barrierDismissible: false,
             builder: (context) => this);
   }
