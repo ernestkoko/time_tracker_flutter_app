@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
-import 'package:time_tracker_flutter/services/auth_provider.dart';
+
 
 class HomePage extends StatelessWidget {
 
@@ -11,7 +12,7 @@ class HomePage extends StatelessWidget {
 
     try {
       print('SignIn clicked');
-      final auth = AuthProvider.of(context);
+      final auth = Provider.of<AuthBase>(context);
       await auth.signOut();
       // onSignOut();
     } catch (err) {

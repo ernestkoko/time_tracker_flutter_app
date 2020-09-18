@@ -2,17 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:time_tracker_flutter/app/sign_in/validators.dart';
 import 'package:time_tracker_flutter/common_widgets/form_submit_button.dart';
 import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
-import 'package:time_tracker_flutter/services/auth_provider.dart';
 
 //enum class to check the state of the user
 enum EmailSignInFormType { signIn, register }
 
 class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
-
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
 }
@@ -33,7 +32,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
 
   void _submit(BuildContext context) async {
-    final auth = AuthProvider.of(context);
+    final auth = Provider.of<AuthBase>(context);
     setState(() {
       _submitted = true;
       _isLoading = true;
@@ -114,7 +113,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       ),
       FormSubmitButton(
         text: primaryText,
-        onPressed: submitEnabled ? () =>_submit(context) : null,
+        onPressed: submitEnabled ? () => _submit(context) : null,
       ),
       SizedBox(
         height: 8.0,
@@ -138,7 +137,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
           errorText: showErrorText ? widget.invalidPasswordErrorText : null),
       obscureText: true,
       enabled: _isLoading == false,
-      onEditingComplete:() => _submit(context),
+      onEditingComplete: () => _submit(context),
       onChanged: (password) => _updateState(),
     );
   }
