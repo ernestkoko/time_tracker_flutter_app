@@ -8,23 +8,33 @@ import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 
 class SignInPage extends StatelessWidget {
+  const SignInPage({Key key, @required this.bloc}) : super(key: key);
+  final SignInBloc bloc;
+
   static Widget create(BuildContext context) {
-    print("create: called");
+    //gte the auth object
+    final auth = Provider.of<AuthBase>(context);
     return Provider<SignInBloc>(
-      create: (_) => SignInBloc(),
-      child: SignInPage(),
+      create: (_) => SignInBloc(auth: auth),
+      //dispose the block after use
+      dispose:(context, bloc) => bloc.dispose() ,
+      //using a Consumer Widget to access the bloc
+      child: Consumer<SignInBloc>(
+        builder: (context, bloc, _) => SignInPage(
+          bloc: bloc,
+        ),
+
+      ),
     );
   }
 
   // async call
 
   Future<void> _signInAnonymously(BuildContext context) async {
-    final bloc = Provider.of<SignInBloc>(context, listen: false);
-
     try {
-      bloc.setIsLoading(true);
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signInAnonymously();
+      //bloc.setIsLoading(true);
+
+      await bloc.signInAnonymously();
     } catch (err) {
       print(err);
       PlatformAlertDialog(
@@ -32,32 +42,25 @@ class SignInPage extends StatelessWidget {
         content: err.message,
         defaultActionText: "Ok",
       ).show(context);
-    } finally {
-      bloc.setIsLoading(false);
     }
   }
 
   Future<void> _signInWithGoogle(BuildContext context) async {
-    final bloc = Provider.of<SignInBloc>(context, listen: false);
-
     try {
-      bloc.setIsLoading(true);
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signInWithGoogle();
+    //  bloc.setIsLoading(true);
+      await bloc.signInWithGoogle();
     } catch (e) {
       PlatformAlertDialog(
         title: "Sign in failed",
         content: e.message,
         defaultActionText: "Ok",
       ).show(context);
-    } finally {
-      bloc.setIsLoading(false);
     }
   }
 
   void _signInWithEmail(BuildContext context) {
     // setState(() => _isLoading = true);
-    final auth = Provider.of<AuthBase>(context, listen: false);
+   // final auth = Provider.of<AuthBase>(context, listen: false);
     //navigate to the email sign in page
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -70,16 +73,17 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = Provider.of<SignInBloc>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         elevation: 2.0,
         title: Text('Time Tracker'),
       ),
       body: StreamBuilder<bool>(
+        //get the isLoading
           stream: bloc.isLoadingStream,
           initialData: false,
           builder: (context, snapshot) {
+            //snapshot.data gets the value of the isLoading
             return _buildContent(context, snapshot.data);
           }),
       backgroundColor: Colors.grey[200],

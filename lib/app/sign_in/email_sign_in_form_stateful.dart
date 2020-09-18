@@ -7,14 +7,17 @@ import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 
 //enum class to check the state of the user
+
 enum EmailSignInFormType { signIn, register }
 
-class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
+class EmailSignInFormStateful extends StatefulWidget
+    with EmailAndPasswordValidators {
   @override
-  _EmailSignInFormState createState() => _EmailSignInFormState();
+  _EmailSignInFormStatefulState createState() =>
+      _EmailSignInFormStatefulState();
 }
 
-class _EmailSignInFormState extends State<EmailSignInForm> {
+class _EmailSignInFormStatefulState extends State<EmailSignInFormStateful> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
@@ -31,7 +34,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
 
   //called when a stateful widget is removed from the widget tree
   @override
-  void dispose(){
+  void dispose() {
     //dispose the text controllers
     _emailController.dispose();
     _passwordController.dispose();
@@ -39,7 +42,8 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
     _passwordFocusNode.dispose();
     super.dispose();
   }
-  void _submit() async {
+
+  Future<void> _submit() async {
     print("Submit: called");
 
     setState(() {
@@ -62,7 +66,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       }
       //close the page if it succeeds
       Navigator.of(context).pop();
-    }  catch (e) {
+    } catch (e) {
       print("Error: occurred");
       //if submit fails
       //display a dialog
@@ -71,7 +75,6 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         content: e.message,
         defaultActionText: "Ok",
       ).show(context);
-
     } finally {
       print("Finally: called");
       setState(() {
