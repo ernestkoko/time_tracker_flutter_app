@@ -5,15 +5,21 @@ import 'package:time_tracker_flutter/app/sign_in/email_sign_in_model.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 
 class EmailSignInBloc {
+  //constructor
   EmailSignInBloc({@required this.auth});
-
+  //instantiate the auth class
   final AuthBase auth;
+  //instantiate and initialise and StreamController of type EmailSignIn Model
   final StreamController<EmailSignInModel> _modelController =
       StreamController<EmailSignInModel>();
 
+  //getter for the Stream
   Stream<EmailSignInModel> get modelStream => _modelController.stream;
+  //instantiate and initialise the Model class
   EmailSignInModel _model = EmailSignInModel();
 
+  //submit method that returns a Future
+  //it is an async call
   Future<void> submit() async {
     print("Submit: called");
     updateWith(submitted: true, isLoading: true);
@@ -30,11 +36,9 @@ class EmailSignInBloc {
             _model.email, _model.password);
       }
     } catch (e) {
-
       //rethrows the error to the calling method
-      rethrow;
-    } finally {
       updateWith(isLoading: false);
+      rethrow;
     }
   }
 
@@ -42,6 +46,25 @@ class EmailSignInBloc {
   void dispose() {
     _modelController.close();
   }
+
+  //method that toggles the form
+  void toggleFormType() {
+    final formType = _model.formType == EmailSignInFormType.signIn
+        ? EmailSignInFormType.register
+        : EmailSignInFormType.signIn;
+    //updates the form with the set values
+    updateWith(
+      email: '',
+      password: '',
+      submitted: false,
+      formType: formType,
+      isLoading: false,
+    );
+  }
+
+  void updateEmail(String email) => updateWith(email: email);
+
+  void updatePassword(String password) => updateWith(password: password);
 
   //method that updates the model
   void updateWith({
@@ -51,8 +74,7 @@ class EmailSignInBloc {
     bool isLoading,
     bool submitted,
   }) {
-    //update model
-    //add updated model to _modelController
+    //update model. It reassigns the new model to _model class
     _model = _model.copyWith(
       email: email,
       password: password,
