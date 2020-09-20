@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker_flutter/app/home_page.dart';
 import 'package:time_tracker_flutter/app/sign_in/sign_in_page.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
+import 'package:time_tracker_flutter/services/database.dart';
 
+import 'file:///C:/Users/user/udemy_courses/time_tracker_flutter/lib/app/home/jobs_page.dart';
 
 class LandingPage extends StatelessWidget {
   // final AuthBase auth;
@@ -24,7 +25,11 @@ class LandingPage extends StatelessWidget {
             return SignInPage.create(context);
           }
           //returns this if there is user
-          return HomePage();
+          return Provider<Database>(
+            //the user is guaranteed to be not null
+            create: (_) => FirestoreDatabase(uid: user.uid),
+            child: JobsPage(),
+          );
         } else {
           //no data in the snapshot
           return Scaffold(
