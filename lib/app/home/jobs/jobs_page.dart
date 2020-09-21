@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_flutter/app/home/jobs/edit_job_page.dart';
+import 'package:time_tracker_flutter/app/home/jobs/empty_content.dart';
 import 'package:time_tracker_flutter/app/home/jobs/job_list_tile.dart';
 import 'package:time_tracker_flutter/app/home/models/job.dart';
 import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
@@ -65,17 +66,22 @@ class JobsPage extends StatelessWidget {
         if (snapshot.hasData) {
           //jobs is a list of jobs
           final jobs = snapshot.data;
+          if (jobs.isNotEmpty) {
           //add toList to change it from iterable object
           final children = jobs
-              .map((job) => JobListTile(
-                    job: job,
-                    onTap: ()=> EditJobPage.show(context,job: job),
-                  ))
+              .map((job) =>
+              JobListTile(
+                job: job,
+                onTap: () => EditJobPage.show(context, job: job),
+              ))
               .toList();
           //listView id better when working with dynamic list of children
           return ListView(
             children: children,
           );
+          }
+          return EmptyContent();
+
         }
         if (snapshot.hasError) {
           return Center(
