@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:time_tracker_flutter/app/home/jobs/jobs_page.dart';
 import 'package:time_tracker_flutter/app/sign_in/sign_in_page.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 import 'package:time_tracker_flutter/services/database.dart';
 
-import 'file:///C:/Users/user/udemy_courses/time_tracker_flutter/lib/app/home/jobs_page.dart';
+
 
 class LandingPage extends StatelessWidget {
   // final AuthBase auth;

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:time_tracker_flutter/app/home/jobs/add_job_page.dart';
+import 'package:time_tracker_flutter/app/home/jobs/job_list_tile.dart';
 import 'package:time_tracker_flutter/app/home/models/job.dart';
 import 'package:time_tracker_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_flutter/services/auth.dart';
 import 'package:time_tracker_flutter/services/database.dart';
 
 class JobsPage extends StatelessWidget {
-
   // async call
   Future<void> _signOut(BuildContext context) async {
     try {
@@ -31,21 +32,6 @@ class JobsPage extends StatelessWidget {
     }
   }
 
-  Future<void> _createJob(BuildContext context) async {
-    print("Create: called");
-    try {
-      final database = Provider.of<Database>(context, listen: false);
-      await database.createJob(Job(name: 'Blogging', ratePerHour: 10));
-    } catch (e) {
-      print("Exception: " +e.message);
-      PlatformAlertDialog(
-        title: "Sign in failed",
-        content: e.message,
-        defaultActionText: "Ok",
-      ).show(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,29 +52,40 @@ class JobsPage extends StatelessWidget {
       body: _buildContents(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _createJob(context),
+        onPressed: () => AddJobPage.show(context),
       ),
     );
   }
 
- Widget _buildContents(BuildContext context) {
+  Widget _buildContents(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
     return StreamBuilder<List<Job>>(
       stream: database.jobsStream(),
-      builder:(context, snapshot){
-        if(snapshot.hasData){
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
           //jobs is a list of jobs
           final jobs = snapshot.data;
           //add toList to change it from iterable object
-          final children = jobs.map((job) => Text(job.name)).toList();
+          final children = jobs
+              .map((job) => JobListTile(
+                    job: job,
+                    onTap: () {print(job.ratePerHour);},
+                  ))
+              .toList();
           //listView id better when working with dynamic list of children
-          return ListView(children: children,);
+          return ListView(
+            children: children,
+          );
         }
-        if(snapshot.hasError){
-          return Center(child: Text("Some errors occurred"),);
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Some errors occurred"),
+          );
         }
-        return Center(child: CircularProgressIndicator(),);
-      }   ,
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }
